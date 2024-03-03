@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+
 
 function PincodeDetail() {
   const [postalData, setPostalData] = useState([]);
@@ -8,7 +9,10 @@ function PincodeDetail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fetchSuccess, setFetchSuccess] = useState(false);
+  const [result,setResult] = useState([]);
   const { pincode } = useParams();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,6 +24,10 @@ function PincodeDetail() {
 
         const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
         const data = await response.json();
+
+
+        console.log(data[0].Message);
+        setResult(data[0].Message);
 
         if (data[0].Status === 'Success') {
           setPostalData(data[0].PostOffice);
@@ -49,12 +57,14 @@ function PincodeDetail() {
     setFilteredData(filtered);
   };
 
+
+
   return (
     <div>
        {fetchSuccess && (
         <div>
           <h1>Pincode: {pincode}</h1>
-          <h1>Message: Number of pincode(s) found:</h1>
+          <h1>Message: {result} </h1>
         </div>
       )}
       <input
@@ -63,6 +73,8 @@ function PincodeDetail() {
         value={filterTerm}
         onChange={handleFilterChange}
       />
+
+      <button className="backBtn" onClick={() => navigate('/')}>Back</button>
 
       {loading && <div>Loading...</div>}
       
